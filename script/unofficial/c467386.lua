@@ -17,9 +17,10 @@ end
 function s.filter(c)
 	return c:IsFaceup() and c:IsReleasableByEffect()
 end
-	--Filter for a monster that can be Special Summoned from your Deck.
+	--Filter for a monster that can be Special Summoned from your Deck, except for "floodgate" monsters listed by their card ID.
 function s.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local mon=c:IsCode(42009836,59509952,28423537,35984222,8696773,11366199,77585513,84636823,69072185,32687071,83061014,12435193,38412161,40672993,72845813,56647086,131182,22386234,10963799,19740112,46145256,47961808,73356503,84478195,41855169,74952447,2980764,80701178,18474999,53303460,82085295,33008376,10158145,16008155)
+    return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not mon
 end
 	--Targets a monster to be Tributed using the first filter, and then sets up the rest of the effect for you to Special Summon from your Deck.
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
