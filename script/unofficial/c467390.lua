@@ -1,0 +1,111 @@
+--Sirenity's Charm
+--Scripted by Lacoodapalooza
+local s,id=GetID()
+function s.initial_effect(c)
+  aux.AddEquipProcedure(c)
+  --If equipped monster battled and not destroyed, can equip to the battled monster
+  local e1=Effect.CreateEffect(c)
+  e1:SetCategory(CATEGORY_EQUIP)
+  e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+  e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+  e1:SetCode(EVENT_BATTLED)
+  e1:SetRange(LOCATION_SZONE)
+  e1:SetCountLimit(1)
+  e1:SetCondition(s.equipcon)
+  e1:SetTarget(s.equiptg)
+  e1:SetOperation(s.equipop)
+  c:RegisterEffect(e1)
+  --No battle damage done to you via equipped Sirenity Monster
+  local e2=Effect.CreateEffect(c)
+  e2:SetType(EFFECT_TYPE_EQUIP)
+  e2:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+  e2:SetCondition(s.damcon)
+  e2:SetValue(1)
+  c:RegisterEffect(e2)
+	--Negate effects when equipped Sirenity Monster battles
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_BE_BATTLE_TARGET)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCondition(s.discon)
+	e3:SetOperation(s.disop)
+	c:RegisterEffect(e3)
+	--Change equipped non-Sirenity to Attack Position (Area of expected troubles along with s.arcon)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_EQUIP)
+	e4:SetCode(EFFECT_SET_POSITION)
+	e4:SetRange(LOCATION_SZONE)
+  e4:SetCondition(s.arcon)
+	e4:SetValue(POS_FACEUP_ATTACK)
+	c:RegisterEffect(e4)
+  -- Material Restriction on equipped non-Sirenity monster
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_EQUIP)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(EFFECT_CANNOT_BE_MATERIAL)
+	e5:SetValue(aux.cannotmatfilter(SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ))
+  e5:SetCondition(s.arcon)
+	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_EQUIP)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e6:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+  e6:SetCondition(s.arcon)
+	e6:SetValue(1)
+	c:RegisterEffect(e6)
+end
+s.listed_series={0x196}
+--If equipped monster battled and not destroyed, can equip to the battled monster
+function s.equipcon(e,tp,eg,ep,ev,re,r,rp)
+  local c=e:GetHandler():GetEquipTarget()
+  return c:GetBattledGroupCount()>0 and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+end
+function s.equipfilter(c)
+  return c:IsFaceup() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+end
+function s.equiptg(e,tp,eg,ep,ev,re,r,rp,chk)
+  if chk==0 then return Duel.IsExistingMatchingCard(s.equipfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler():GetEquipTarget(),e,tp) end
+  Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_MZONE,LOCATION_MZONE)
+end
+function s.equipop(e,tp,eg,ep,ev,re,r,rp)
+  local g=Duel.SelectMatchingCard(tp,s.equipfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,e:GetHandler():GetEquipTarget(),e,tp)
+  local tc=g:GetFirst()
+  Duel.Equip(tp,e:GetHandler(),tc,true)
+  --Equip to monster
+  local e1=Effect.CreateEffect(e:GetHandler())
+  e1:SetType(EFFECT_TYPE_SINGLE)
+  e1:SetCode(EFFECT_EQUIP_LIMIT)
+  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+  e1:SetValue(s.eqlimit1)
+  e1:SetLabelObject(tc)
+  e:GetHandler():RegisterEffect(e1)
+end
+function s.eqlimit1(e,c)
+  return c==e:GetLabelObject()
+end
+function s.damcon(e)
+	local c=e:GetHandler():GetEquipTarget()
+	  return c:IsSetCard(0x196)
+end
+function s.discon(e,tp,eg,ep,ev,re,r,rp)
+	local ec=e:GetHandler():GetEquipTarget()
+		return ec and ec:GetControler()==tp and (ec==Duel.GetAttacker() or ec==Duel.GetAttackTarget()) and ec:GetBattleTarget() and ec:IsSetCard(0x196)
+end
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetHandler():GetEquipTarget():GetBattleTarget()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DISABLE)
+  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_DISABLE_EFFECT)
+  e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e2)
+end
+-- This one doesn't seem to work
+function s.arcon(e,c)
+	local ec=e:GetHandler():GetEquipTarget()
+	 return not ec:IsSetCard(0x196)
+end
