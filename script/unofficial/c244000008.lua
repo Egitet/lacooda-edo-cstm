@@ -54,7 +54,7 @@ end
 function s.faop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=e:GetHandler():GetBattleTarget()
-	if tc and tc:IsRelateToBattle() and not tc:IsImmuneToEffect(e) then
+	if tc and tc:IsRelateToBattle() and not tc:IsImmuneToEffect() then
 		Duel.Overlay(c,tc,true)
 	end
 end
