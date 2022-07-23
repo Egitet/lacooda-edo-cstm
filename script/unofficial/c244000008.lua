@@ -37,8 +37,8 @@ function s.initial_effect(c)
 	e3:SetOperation(s.graop)
 	c:RegisterEffect(e3,false,REGISTER_FLAG_DETACH_XMAT)
 end
-function s.efilter(e,re)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetOwner()~=e:GetOwner()
+function s.efilter(e,te)
+    return te:IsActiveType(TYPE_MONSTER) and te:GetOwner()~=e:GetOwner()
 end
 function s.bgfilter(c,e,tp)
 	return c:IsType(TYPE_TRAP)
