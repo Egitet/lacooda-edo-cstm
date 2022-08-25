@@ -67,7 +67,7 @@ function s.aspop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,170,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function s.fdspfilter(c,e,tp)
