@@ -44,7 +44,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function s.posfilter(c)
-	return c:IsSetCard(0x3e) and c:IsRace(RACE_REPTILE) and c:IsFacedown() or (c:IsFaceup() and c:IsCanTurnSet())
+	return c:IsSetCard(0x3e) and c:IsRace(RACE_REPTILE) and c:IsFacedown() or (c:IsSetCard(0x3e) and c:IsRace(RACE_REPTILE) and c:IsFaceup() and c:IsCanTurnSet())
 end
 function s.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.posfilter(chkc,tp) end
