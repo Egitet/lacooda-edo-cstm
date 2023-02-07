@@ -40,7 +40,7 @@ function s.initial_effect(c)
 end
 s.listed_series={0x604e}
 function s.rlcon(e)
-	return Duel.IsExistingMatchingCard(aux.FilterFaceupFunction(Card.IsSetCard,0x604e),e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsSetCard,0x604e),e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function s.asfilter(c,e,tp)
 	return c:IsSetCard(0x604e) and c:IsControler(tp) and not c:IsPublic()
